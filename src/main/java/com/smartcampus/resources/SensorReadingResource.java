@@ -2,6 +2,8 @@ package com.smartcampus.resources;
 
 import com.smartcampus.models.SensorReading;
 import com.smartcampus.repository.DataStore;
+import com.smartcampus.models.Sensor;
+import com.smartcampus.exceptions.SensorUnavailableException;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -49,10 +51,18 @@ public class SensorReadingResource {
      */
     @POST
     public Response addReading(SensorReading newReading) {
-        if (!dataStore.getSensors().containsKey(sensorId)) {
+        // Retrieve the parent sensor to check existence AND status
+        Sensor parentSensor = dataStore.getSensors().get(sensorId);
+
+        if (parentSensor == null) {
             return Response.status(Status.NOT_FOUND)
                     .entity("{\"error\":\"Sensor not found.\"}")
                     .build();
+        }
+
+        // Block readings if the sensor is in MAINTENANCE
+        if ("MAINTENANCE".equalsIgnoreCase(parentSensor.getStatus())) {
+            throw new SensorUnavailableException("Sensor '" + sensorId + "' is currently in MAINTENANCE mode and cannot accept new readings.");
         }
 
         // Generate UUID and timestamp if not provided
@@ -67,8 +77,8 @@ public class SensorReadingResource {
         dataStore.getSensorReadings().computeIfAbsent(sensorId, k -> Collections.synchronizedList(new ArrayList<>()));
         dataStore.getSensorReadings().get(sensorId).add(newReading);
 
-        // Update the sensor's current value
-        dataStore.getSensors().get(sensorId).setCurrentValue(newReading.getValue());
+        // Update the sensor's current value (using the object reference that is already fetched)
+        parentSensor.setCurrentValue(newReading.getValue());
 
         return Response.status(Status.CREATED)
                 .entity(newReading)

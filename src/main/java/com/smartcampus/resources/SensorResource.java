@@ -3,6 +3,7 @@ package com.smartcampus.resources;
 import com.smartcampus.models.Room;
 import com.smartcampus.models.Sensor;
 import com.smartcampus.repository.DataStore;
+import com.smartcampus.exceptions.LinkedResourceNotFoundException;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -39,18 +40,16 @@ public class SensorResource {
                     .build();
         }
 
-        // 3. Business Logic Constraint: Verify the roomId exists in the system
+        // Throw the custom exception if the linked room does not exist
         Room assignedRoom = dataStore.getRooms().get(newSensor.getRoomId());
         if (assignedRoom == null) {
-            return Response.status(Status.BAD_REQUEST) // 400 Bad Request is appropriate for invalid foreign keys
-                    .entity("{\"error\":\"Cannot register sensor. Room ID '" + newSensor.getRoomId() + "' does not exist.\"}")
-                    .build();
+            throw new LinkedResourceNotFoundException("Cannot register sensor. Room ID '" + newSensor.getRoomId() + "' does not exist.");
         }
 
         // 4. Save the sensor
         dataStore.getSensors().put(newSensor.getId(), newSensor);
 
-        // 5. Update the Room's internal list of sensors (thread-safe block for compound action)
+        // 5. Update the Room's internal list of sensors
         synchronized (assignedRoom.getSensorIds()) {
             assignedRoom.getSensorIds().add(newSensor.getId());
         }
