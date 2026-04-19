@@ -1,6 +1,7 @@
 package com.smartcampus.resources;
 
 import com.smartcampus.models.Room;
+import com.smartcampus.exceptions.RoomNotEmptyException;
 import com.smartcampus.repository.DataStore;
 
 import jakarta.ws.rs.*;
@@ -85,33 +86,27 @@ public class SensorRoomResource {
 
     /**
      * DELETE /api/v1/rooms/{roomId}
-     * Deletes a room, provided it has no sensors assigned to it to prevent data orphans.
+     * Deletes a room, provided it has no sensors assigned to it.
      */
     @DELETE
     @Path("/{roomId}")
     public Response deleteRoom(@PathParam("roomId") String roomId) {
-        // Retrieve the room from the thread-safe store
         Room room = dataStore.getRooms().get(roomId);
 
-        // 1. Check if the room exists
         if (room == null) {
             return Response.status(Status.NOT_FOUND)
                     .entity("{\"error\":\"Room not found.\"}")
                     .build();
         }
 
-        // 2. Business Logic Constraint: Check for orphaned sensors
+        // Throw the custom exception instead of manually building a 409 response
         if (room.getSensorIds() != null && !room.getSensorIds().isEmpty()) {
-            return Response.status(Status.CONFLICT) // 409 Conflict
-                    .entity("{\"error\":\"Cannot delete room '" + roomId + "'. It still has "
-                            + room.getSensorIds().size() + " sensor(s) assigned to it.\"}")
-                    .build();
+            throw new RoomNotEmptyException("Cannot delete room '" + roomId + "'. It is currently occupied by active hardware.");
         }
 
-        // 3. Safe to delete
+        // Safe to delete
         dataStore.getRooms().remove(roomId);
 
-        // HTTP 204 No Content is standard for a successful DELETE that returns no body
         return Response.status(Status.NO_CONTENT).build();
     }
 }
