@@ -1,10 +1,21 @@
-# 🏫 Smart Campus API
+# Smart Campus API
 
-A RESTful API for managing smart campus infrastructure — tracking rooms, sensors, and real-time sensor readings across a university campus. Built with **JAX-RS (Jersey 3.1.5)** running on an embedded **Grizzly2 HTTP server**, requiring no external application server.
+A RESTful API for managing smart campus infrastructure — tracking rooms, sensors, and real-time sensor readings across a university campus. Built with **JAX-RS** running on an embedded **Grizzly HTTP server**, requiring no external application server.
 
 ---
 
-## 📖 Table of Contents
+## Author
+
+**Subhagya** — [GitHub Profile](https://github.com/Subhagya314)
+
+**UID** — w2153365/20240133   
+
+---
+
+*Developed as coursework for the 5COSC022C Client-Server Architectures module.*
+
+
+## Table of Contents
 
 - [Overview](#overview)
 - [API Design](#api-design)
@@ -482,11 +493,3 @@ curl -s -X POST http://localhost:8080/api/v1/sensors/sensor-002/readings \
 | Apache Maven                  | 3.6+    | Build & dependency management               |
 
 ---
-
-## Author
-
-**Subhagya314** — [GitHub Profile](https://github.com/Subhagya314)
-
----
-
-*Developed as coursework for the 5COSC022C Client-Server Architectures module.*
