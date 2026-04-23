@@ -213,10 +213,12 @@ JAX-RS-Smart-Campus-API/
 
 Ensure the following are installed before building:
 
-| Tool         | Minimum Version | Verify With     |
-|--------------|-----------------|-----------------|
-| Java JDK     | 11              | `java -version` |
-| Apache Maven | 3.6+            | `mvn -version`  |
+| Tool           | Minimum Version | Download                              |
+|----------------|-----------------|---------------------------------------|
+| Java JDK       | 11              | https://www.oracle.com/java/technologies/downloads/ |
+| Apache NetBeans| 17+             | https://netbeans.apache.org/downloads/ |
+
+> NetBeans bundles its own Maven, so no separate Maven installation is required.
 
 ---
 
@@ -224,53 +226,74 @@ Ensure the following are installed before building:
 
 ### Step 1 — Clone the Repository
 
+Download or clone the project from GitHub:
+
+```
+https://github.com/Subhagya314/JAX-RS-Smart-Campus-API.git
+```
+
+You can clone it using Git Bash:
 ```bash
 git clone https://github.com/Subhagya314/JAX-RS-Smart-Campus-API.git
-cd JAX-RS-Smart-Campus-API
 ```
 
-### Step 2 — Install Dependencies & Compile
+Or download it as a ZIP from GitHub → **Code** → **Download ZIP**, then extract it.
 
-```bash
-mvn clean compile
+### Step 2 — Open the Project in NetBeans
+
+1. Open **NetBeans**
+2. Go to **File** → **Open Project**
+3. Navigate to the folder where you cloned or extracted the project
+4. Select the `Smart Campus` folder — NetBeans will recognise it as a Maven project automatically because of the `pom.xml`
+5. Click **Open Project**
+
+### Step 3 — Build the Project
+
+In the **Projects** panel on the left:
+
+1. Right-click the project name (`smart-campus-api`)
+2. Click **Clean and Build**
+
+NetBeans will run Maven in the background and download all dependencies (Jersey, Grizzly2, etc.) automatically. Watch the **Output** panel at the bottom — wait for:
+
 ```
-
-Maven will automatically download Jersey, Grizzly2, and all other declared dependencies. You should see `BUILD SUCCESS` at the end.
-
-### Step 3 — Package into a JAR
-
-```bash
-mvn package -DskipTests
+BUILD SUCCESS
 ```
-
-This produces `target/smart-campus-api-1.0-SNAPSHOT.jar`.
 
 ### Step 4 — Start the Server
 
-```bash
-mvn exec:java -Dexec.mainClass="com.smartcampus.Main"
-```
+1. In the **Projects** panel, expand **Source Packages** → `com.smartcampus`
+2. Right-click **Main.java** → click **Run File**  
+   *(or open `Main.java` in the editor and press **Shift + F6**)*
 
-You should see the following output in your terminal:
+You should see the following in the **Output** panel at the bottom of NetBeans:
 
 ```
 Smart Campus API started with endpoints available at http://localhost:8080/api/v1/
 Hit enter to stop it...
 ```
 
+The server is now running. You can open Postman and begin making requests.
+
+> **Base URL:** `http://localhost:8080/api/v1`
+
 ### Step 5 — Verify the Server is Running
 
-Open a **new terminal** and run:
+Open Postman and send a `GET` request to:
 
-```bash
-curl -s http://localhost:8080/api/v1/
+```
+http://localhost:8080/api/v1/
 ```
 
 You should receive the API discovery metadata as a JSON response. The server is ready.
 
-> **Base URL:** `http://localhost:8080/api/v1`
+### Stopping & Restarting the Server
 
-To stop the server, press **Enter** in the terminal where it is running.
+To **stop** the server, click the **red square (Stop) button** in the Output panel toolbar in NetBeans.
+
+To **restart** with a clean database, right-click **Main.java** → **Run File** again (or press **Shift + F6**). Since all data is stored in-memory, restarting the server wipes everything and starts fresh.
+
+> **Note:** You only need to **Clean and Build** again if you make changes to the source code. For a simple restart, just use **Run File** directly.
 
 ---
 
